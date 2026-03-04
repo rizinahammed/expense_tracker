@@ -1,0 +1,160 @@
+{% extends 'tracker/base.html' %}
+{% load static %}
+
+{% block title %}Dashboard - Personal Expense Tracker{% endblock %}
+
+{% block page_title %}Dashboard{% endblock %}
+
+{% block header_actions %}
+<a href="{% url 'transaction_add' %}" class="btn btn-success">
+    <span class="icon">＋</span> Add Transaction
+</a>
+{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'tracker/css/dashboard.css' %}">
+
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-shell">
+    <div class="kpi-grid">
+        <div class="overview-card">
+            <div class="card-body">
+                <div class="kpi-content">
+                    <div class="income-icon metric-icon">
+                        <span class="icon">↑</span>
+                    </div>
+                    <div class="kpi-text">
+                        <p class="metric-label">Total Income</p>
+                        <p class="metric-value">₹{{ total_income|floatformat:2 }}</p>
+                        <p class="metric-note">All recorded income transactions</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="overview-card">
+            <div class="card-body">
+                <div class="kpi-content">
+                    <div class="expense-icon metric-icon">
+                        <span class="icon">↓</span>
+                    </div>
+                    <div class="kpi-text">
+                        <p class="metric-label">Total Expense</p>
+                        <p class="metric-value">₹{{ total_expense|floatformat:2 }}</p>
+                        <p class="metric-note">All recorded expense transactions</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="overview-card">
+            <div class="card-body">
+                <div class="kpi-content">
+                    <div class="balance-icon metric-icon">
+                        <span class="icon">●</span>
+                    </div>
+                    <div class="kpi-text">
+                        <p class="metric-label">Current Balance</p>
+                        <p class="metric-value">₹{{ balance|floatformat:2 }}</p>
+                        <p class="metric-note">Current net amount available</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="dashboard-card spending-card">
+        <div class="transactions-header">
+            <div>
+                <h3 class="section-title">Income vs Expense by Category</h3>
+                <p class="section-subtitle">Compare each category's incoming and outgoing amounts</p>
+            </div>
+            <div class="chart-legend">
+                <span class="legend-item"><span class="legend-color income"></span>Income</span>
+                <span class="legend-item"><span class="legend-color expense"></span>Expense</span>
+            </div>
+        </div>
+
+        <div class="spending-body">
+            {% if category_comparison %}
+                {{ category_chart_data|json_script:"category-chart-data" }}
+                <div class="chart-shell">
+                    <svg id="income-expense-chart" class="income-expense-chart" role="img" aria-label="Income and expense bar chart by category"></svg>
+                    <div id="chart-tooltip" class="chart-tooltip" aria-hidden="true"></div>
+                </div>
+            {% else %}
+                <div class="empty-state spending-empty">
+                    <span class="empty-icon">📊</span>
+                    No category data yet. Add transactions to see income and expense comparison.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="dashboard-card">
+        <div class="card-body">
+                    <div class="transactions-header">
+                        <div>
+                            <h3 class="section-title">Recent Transactions</h3>
+                            <p class="section-subtitle">Latest activity in your account</p>
+                        </div>
+                        <a href="{% url 'transaction_list' %}" class="view-all-btn">
+                            View All →
+                        </a>
+                    </div>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Type</th>
+                                    <th>Category</th>
+                                    <th>Amount</th>
+                                    <th>Description</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for transaction in recent_transactions %}
+                                <tr>
+                                    <td>{{ transaction.date|date:"M d, Y" }}</td>
+                                    <td>
+                                        {% if transaction.type == 'income' %}
+                                            <span class="badge bg-success">Income</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">Expense</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ transaction.category.name }}</td>
+                                    <td class="{% if transaction.type == 'income' %}text-success{% else %}text-danger{% endif %}">
+                                        {% if transaction.type == 'income' %}+{% else %}-{% endif %}₹{{ transaction.amount }}
+                                    </td>
+                                    <td>{{ transaction.description|truncatechars:50 }}</td>
+                                    <td class="action-cell">
+                                        <a href="{% url 'transaction_edit' transaction.pk %}" class="btn btn-sm btn-outline-primary">
+                                            Edit
+                                        </a>
+                                        <a href="{% url 'transaction_delete' transaction.pk %}" class="btn btn-sm btn-outline-danger">
+                                            Delete
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="6" class="empty-state">
+                                        <span class="empty-icon">📭</span>
+                                        No transactions yet. <a href="{% url 'transaction_add' %}" class="text-primary">Add your first transaction</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'tracker/js/dashboard.js' %}"></script>
+{% endblock %}

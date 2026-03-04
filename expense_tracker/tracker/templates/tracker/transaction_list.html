@@ -1,0 +1,86 @@
+{% extends 'tracker/base.html' %}
+
+{% block title %}Transactions - Personal Expense Tracker{% endblock %}
+
+{% block page_title %}Transactions{% endblock %}
+
+{% block header_actions %}
+<a href="{% url 'transaction_add' %}" class="btn btn-success">
+    <span class="icon">＋</span> Add Transaction
+</a>
+{% endblock %}
+
+{% block content %}
+<div class="table-responsive">
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Category</th>
+                <th>Amount</th>
+                <th>Description</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for transaction in transactions %}
+            <tr>
+                <td>{{ transaction.date|date:"M d, Y" }}</td>
+                <td>
+                    {% if transaction.type == 'income' %}
+                        <span class="badge badge-income">Income</span>
+                    {% else %}
+                        <span class="badge badge-expense">Expense</span>
+                    {% endif %}
+                </td>
+                <td>{{ transaction.category.name }}</td>
+                <td class="{% if transaction.type == 'income' %}amount-income{% else %}amount-expense{% endif %}">
+                    {% if transaction.type == 'income' %}+{% else %}-{% endif %}₹{{ transaction.amount }}
+                </td>
+                <td>{{ transaction.description|truncatechars:50 }}</td>
+                <td>
+                    <a href="{% url 'transaction_edit' transaction.pk %}" class="btn btn-sm">
+                        Edit
+                    </a>
+                    <a href="{% url 'transaction_delete' transaction.pk %}" class="btn btn-danger btn-sm">
+                        Delete
+                    </a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" class="empty-cell">
+                    <span class="empty-icon">📭</span>
+                    No transactions found. <a href="{% url 'transaction_add' %}">Add your first transaction</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% if is_paginated %}
+<div class="pagination">
+    {% if page_obj.has_previous %}
+    <a href="?page={{ page_obj.previous_page_number }}">
+        ← Previous
+    </a>
+    {% endif %}
+
+    {% for num in page_obj.paginator.page_range %}
+        {% if page_obj.number == num %}
+            <span class="current">{{ num }}</span>
+        {% elif num > page_obj.number|add:-3 and num < page_obj.number|add:3 %}
+            <a href="?page={{ num }}">{{ num }}</a>
+        {% endif %}
+    {% endfor %}
+
+    {% if page_obj.has_next %}
+    <a href="?page={{ page_obj.next_page_number }}">
+        Next →
+    </a>
+    {% endif %}
+</div>
+{% endif %}
+{% endblock %}

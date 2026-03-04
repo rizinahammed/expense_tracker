@@ -1,0 +1,87 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Personal Expense Tracker{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'tracker/css/main.css' %}">
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    {% if user.is_authenticated %}
+    <button class="sidebar-toggle" type="button" aria-label="Toggle menu">
+        ☰
+    </button>
+
+    <div class="sidebar-overlay"></div>
+
+    <aside class="sidebar" id="sidebar">
+        <h1>ExpenseTracker</h1>
+        <nav>
+            <div class="nav-item">
+                <a href="{% url 'dashboard' %}" class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+                    <span class="nav-icon">📊</span> Dashboard
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="{% url 'transaction_list' %}" class="{% if 'transaction' in request.resolver_match.url_name %}active{% endif %}">
+                    <span class="nav-icon">💳</span> Transactions
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="{% url 'category_list' %}" class="{% if 'category' in request.resolver_match.url_name %}active{% endif %}">
+                    <span class="nav-icon">🏷</span> Categories
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="{% url 'transaction_add' %}" class="btn-success">
+                    <span class="nav-icon">＋</span> Add Transaction
+                </a>
+            </div>
+        </nav>
+    </aside>
+    {% endif %}
+
+    <main class="main-content {% if not user.is_authenticated %}full-width{% endif %}">
+        <div class="main-container">
+            <header class="header">
+                <h1>{% block page_title %}Dashboard{% endblock %}</h1>
+                <div class="header-actions">
+                    {% block header_actions %}{% endblock %}
+                    {% if user.is_authenticated %}
+                    <div class="user-section">
+                        <div class="user-info">
+                            <span>Welcome,</span>
+                            <span class="username">{{ user.username }}</span>
+                        </div>
+                        <form method="post" action="{% url 'logout' %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-secondary btn-sm">
+                                <span class="icon">↪</span> Logout
+                            </button>
+                        </form>
+                    </div>
+                    {% else %}
+                    <div class="user-section">
+                        <a href="{% url 'login' %}" class="btn btn-sm">
+                            <span class="icon">→</span> Login
+                        </a>
+                        <a href="{% url 'signup' %}" class="btn btn-success btn-sm">
+                            <span class="icon">✚</span> Sign Up
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </header>
+
+            <div class="content-card">
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+    </main>
+
+    <script src="{% static 'tracker/js/main.js' %}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

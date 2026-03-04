@@ -1,0 +1,36 @@
+{% extends 'tracker/base.html' %}
+{% load static %}
+
+{% block title %}Delete Category - Personal Expense Tracker{% endblock %}
+
+{% block page_title %}Delete Category{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'tracker/css/confirm_delete.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="delete-shell">
+    <div class="delete-intro">
+        <span class="delete-icon">⚠</span>
+        <h3 class="delete-title">Confirm Deletion</h3>
+        <p class="delete-text">Are you sure you want to delete the category "<strong>{{ object.name }}</strong>"? This action cannot be undone.</p>
+    </div>
+
+    <div class="delete-card">
+        <span class="delete-card-icon">🏷</span>
+        <h4>Category: {{ object.name }}</h4>
+        <p>This will permanently remove this category from your expense tracker.</p>
+    </div>
+
+    <form method="post" class="delete-actions">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">
+            🗑 Yes, Delete Category
+        </button>
+        <a href="{% url 'dashboard' %}" class="btn btn-secondary">
+            ✕ Cancel
+        </a>
+    </form>
+</div>
+{% endblock %}

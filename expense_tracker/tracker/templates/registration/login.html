@@ -1,0 +1,44 @@
+{% extends 'registration/auth_base.html' %}
+
+{% block title %}Login - Personal Expense Tracker{% endblock %}
+
+{% block page_title %}Login{% endblock %}
+
+{% block auth_nav %}
+<a href="{% url 'signup' %}" class="btn btn-primary"><span class="icon">✚</span> Sign Up</a>
+{% endblock %}
+
+{% block content %}
+<form method="post" class="form-grid" novalidate>
+    {% csrf_token %}
+
+    <div class="field">
+        <label for="id_username">Username</label>
+        <div class="input-wrap">
+            <input type="text" name="username" id="id_username" value="{{ form.username.value|default:'' }}" required autofocus>
+        </div>
+        {{ form.username.errors }}
+    </div>
+
+    <div class="field">
+        <label for="id_password">Password</label>
+        <div class="input-wrap">
+            <input type="password" name="password" id="id_password" required>
+            <button type="button" class="toggle-password" data-target="id_password" aria-label="Show password">
+                👁
+            </button>
+        </div>
+        {{ form.password.errors }}
+    </div>
+
+    {% if form.non_field_errors %}
+        {{ form.non_field_errors }}
+    {% endif %}
+
+    <div class="actions">
+        <button type="submit" class="btn btn-primary">Login</button>
+    </div>
+</form>
+
+<p class="auth-footnote">Don't have an account? <a href="{% url 'signup' %}">Sign up</a></p>
+{% endblock %}

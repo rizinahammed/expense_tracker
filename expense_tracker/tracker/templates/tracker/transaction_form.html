@@ -1,0 +1,80 @@
+{% extends 'tracker/base.html' %}
+{% load static %}
+
+{% block title %}{% if form.instance.pk %}Edit{% else %}Add{% endif %} Transaction - Personal Expense Tracker{% endblock %}
+
+{% block page_title %}{% if form.instance.pk %}Edit{% else %}Add{% endif %} Transaction{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'tracker/css/transaction_form.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="transaction-form-wrapper">
+    <form method="post" id="transaction-form">
+        {% csrf_token %}
+
+        <div class="form-field">
+            <label for="{{ form.amount.id_for_label }}">Amount</label>
+            <div class="input-prefix">
+                <span class="prefix">₹</span>
+                {{ form.amount }}
+            </div>
+            {{ form.amount.errors }}
+        </div>
+
+        <div class="form-section form-field">
+            <span class="type-label">Type</span>
+            <div class="radio-group">
+                {{ form.type }}
+            </div>
+            {{ form.type.errors }}
+        </div>
+
+        <div class="form-section form-field">
+            <label for="{{ form.category.id_for_label }}">Category</label>
+            {{ form.category }}
+            {{ form.category.errors }}
+            <a href="{% url 'category_add' %}" class="category-dialog-btn">
+                Manage categories
+            </a>
+        </div>
+
+        <div class="form-section form-field">
+            <label for="{{ form.date.id_for_label }}">Date</label>
+            {{ form.date }}
+            {{ form.date.errors }}
+        </div>
+
+        <div class="form-section form-field">
+            <label for="{{ form.description.id_for_label }}">
+                Description <span class="optional-text">(optional)</span>
+            </label>
+            {{ form.description }}
+            {{ form.description.errors }}
+        </div>
+
+        {% if form.non_field_errors %}
+            <ul class="error-list">
+                {% for error in form.non_field_errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        <div class="actions">
+            <button type="submit" class="btn-compact btn-save">
+                ✓ {% if form.instance.pk %}Update{% else %}Save{% endif %}
+            </button>
+            <a href="{% url 'dashboard' %}" class="btn-compact btn-cancel">
+                ✕ Cancel
+            </a>
+        </div>
+    </form>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'tracker/js/transaction_form.js' %}"></script>
+{% endblock %}

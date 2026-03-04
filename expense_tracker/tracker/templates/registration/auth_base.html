@@ -1,0 +1,31 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Personal Expense Tracker{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'tracker/css/auth.css' %}">
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <header class="topbar">
+        <a href="{% url 'login' %}" class="brand">ExpenseTracker</a>
+        <div class="topbar-actions">
+            {% if not user.is_authenticated %}
+                {% block auth_nav %}{% endblock %}
+            {% endif %}
+        </div>
+    </header>
+
+    <main class="auth-shell">
+        <section class="auth-card">
+            <h1 class="auth-title">{% block page_title %}{% endblock %}</h1>
+            {% block content %}{% endblock %}
+        </section>
+    </main>
+
+    <script src="{% static 'tracker/js/auth.js' %}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

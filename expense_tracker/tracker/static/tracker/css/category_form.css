@@ -1,0 +1,20 @@
+.category-form-shell {
+    max-width: 640px;
+    margin: 0 auto;
+}
+
+.category-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.6rem;
+}
+
+@media (max-width: 640px) {
+    .category-actions {
+        flex-direction: column;
+    }
+
+    .category-actions .btn {
+        width: 100%;
+    }
+}
